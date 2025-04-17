@@ -1,0 +1,27 @@
+{
+  "description": "invalid - exactly one target database has to be configured",
+  "change_log_file": "./changelog-master.xml",
+  "source_database": {
+    "name": "test mysql database",
+    "dbms_type": "mysql",
+    "jdbc_url": "jdbc:mariadb://dbmerger.mysql.local:3306/dbmerger",
+    "username": "root",
+    "password": "password"
+  },
+  "target_databases": [
+    {
+      "name": "test postgresql database",
+      "dbms_type": "postgresql",
+      "jdbc_url": "jdbc:postgresql://dbmerger.postgres.local:5432/postgres",
+      "username": "postgres",
+      "password": "password"
+    },
+    {
+      "name": "test postgresql database 02",
+      "dbms_type": "postgresql",
+      "jdbc_url": "jdbc:postgresql://dbmerger.postgres.local:5432/postgres",
+      "username": "postgres",
+      "password": "password"
+    }
+  ]
+}

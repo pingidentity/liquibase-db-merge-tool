@@ -1,0 +1,21 @@
+{
+  "description": "valid - but with a warning as the source is mysql but 'postgres_type=true' has been set",
+  "change_log_file": "./changelog-master.xml",
+  "source_database": {
+    "postgres_type": true,
+    "name": "test mysql database",
+    "dbms_type": "mysql",
+    "jdbc_url": "jdbc:mariadb://dbmerger.mysql.local:3306/dbmerger",
+    "username": "root",
+    "password": "password"
+  },
+  "target_databases": [
+    {
+      "name": "test postgresql database",
+      "dbms_type": "postgresql",
+      "jdbc_url": "jdbc:postgresql://dbmerger.postgres.local:5432/postgres",
+      "username": "postgres",
+      "password": "password"
+    }
+  ]
+}

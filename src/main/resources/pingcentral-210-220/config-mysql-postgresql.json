@@ -1,0 +1,88 @@
+{
+  "description": "Configured to copy database data from MySQL to PostgreSQL for PingCentral version 2.1.0 - 2.2.0",
+  "change_log_file": "changelog.json",
+  "delete_target_data": true,
+  "compare_data": false,
+  "source_database": {
+    "name": "mysql",
+    "dbms_type": "mysql",
+    "jdbc_url": "jdbc:mariadb://dbmerger.mysql.local:3306/dbmerger?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useJvmCharsetConverters=true",
+    "username": "root",
+    "password": "password"
+  },
+  "target_databases": [
+    {
+      "name": "postgresql",
+      "dbms_type": "postgresql",
+      "jdbc_url": "jdbc:postgresql://dbmerger.postgres.local:5432/postgres?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useJvmCharsetConverters=true",
+      "username": "postgres",
+      "password": "password",
+      "translate_to_postgres_large_clob_object": [
+        {
+          "table": "client_template",
+          "columns": ["client", "oidc_policy", "atm"]
+        },
+        {
+          "table": "client_template_aud",
+          "columns": ["client", "oidc_policy", "atm"]
+        },
+        {
+          "table": "client_application",
+          "columns": ["client", "oidc_policy", "atm"]
+        },
+        {
+          "table": "client_promotion_history",
+          "columns": ["client", "oidc_policy", "atm"]
+        },
+        {
+          "table": "connection_application",
+          "columns": ["connection", "attribute_mappings"]
+        },
+        {
+          "table": "connection_details",
+          "columns": ["connection_detail", "attribute_mappings"]
+        },
+        {
+          "table": "connection_promotion_history",
+          "columns": ["connection", "sp_validation_certificate", "idp_signing_certificate", "attribute_mappings", "metadata", "metadata_url", "certificate_file_name", "idp_signing_certificate_id", "assertion_encryption_certificate", "acs_url"]
+        },
+        {
+          "table": "connection_template_aud",
+          "columns": ["connection"]
+        },
+        {
+          "table": "connection_template",
+          "columns": ["connection"]
+        },
+        {
+          "table": "connection_metadata",
+          "columns": ["connection_metadata"]
+        },
+        {
+          "table": "advanced_edit_promotion_history",
+          "columns": ["promotion_json"]
+        },
+        {
+          "table": "pingaccess_application",
+          "columns": ["application"]
+        },
+        {
+          "table": "pingaccess_promotion_history",
+          "columns": ["application"]
+        },
+        {
+          "table": "pingaccess_template",
+          "columns": ["application"]
+        },
+        {
+          "table": "pingaccess_template_aud",
+          "columns": ["application"]
+        },
+        {
+          "table": "expression_aud",
+          "columns": ["expression"]
+        }
+      ]
+    }
+  ]
+}

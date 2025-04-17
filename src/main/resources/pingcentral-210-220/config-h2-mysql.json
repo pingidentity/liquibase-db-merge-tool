@@ -1,0 +1,22 @@
+{
+  "description": "Configured to copy database from H2 to MySQL for PingCentral version 2.1.0 - 2.2.0",
+  "change_log_file": "changelog.json",
+  "delete_target_data": true,
+  "compare_data": false,
+  "source_database": {
+    "name": "h2",
+    "dbms_type": "h2",
+    "jdbc_url": "jdbc:h2:/abolute/path/to/h2/pingcentral;TRACE_LEVEL_SYSTEM_OUT=0;TRACE_LEVEL_FILE=0;DB_CLOSE_ON_EXIT=FALSE;ALLOW_LITERALS=ALL",
+    "username": "PingCentral",
+    "password": "password"
+  },
+  "target_databases": [
+    {
+      "name": "mysql",
+      "dbms_type": "mysql",
+      "jdbc_url": "jdbc:mariadb://dbmerger.mysql.local:3306/dbmerger?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useJvmCharsetConverters=true",
+      "username": "root",
+      "password": "password"
+    }
+  ]
+}

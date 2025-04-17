@@ -1,0 +1,31 @@
+{
+  "description": "includes optional objects in target database",
+  "change_log_file": "./changelog-master.xml",
+  "source_database": {
+    "name": "test mysql database",
+    "dbms_type": "mysql",
+    "jdbc_url": "jdbc:mariadb://dbmerger.mysql.local:3306/dbmerger",
+    "username": "root",
+    "password": "password"
+  },
+  "target_databases": [
+    {
+      "name": "test postgresql database",
+      "dbms_type": "postgresql",
+      "jdbc_url": "jdbc:postgresql://dbmerger.postgres.local:5432/postgres",
+      "username": "postgres",
+      "password": "password",
+      "translate_from_postgres_large_clob_object": [
+        {
+          "table": "table_01",
+          "translate_all": false,
+          "columns": ["column_01", "column_02"]
+        },
+        {
+          "table": "table_02",
+          "translate_all": true
+        }
+      ]
+    }
+  ]
+}
