@@ -2,7 +2,7 @@
 
 Liquibase DB Migration Tool migrates data from one database to another. Data can be moved between H2, MySQL and PostgreSQL.
 
-It is a standalone tool that complements software products (such as PingCentral) that use liquibase to move between databases. 
+It is a standalone tool that complements software products that use liquibase to manage databases. 
 
 ## Introduction
 
@@ -39,22 +39,6 @@ The database connection and other details are provided by a single configuration
 **Good to know**
 
 - This setup was developed on a MacBook. If this is used on a Windows machine, the needed instructions may differ
-- The document describes processes that work with PingCentral. However, PingCentral is not needed for this tool, only liquibase managed databases
-
-### Template configurations
-
-This repository includes configuration and a json based changelog file examples that work with PingCentral 2.1 and 2.2.
-
-To keep things simple, update the jdbc information in these files before following the *Building the tool* instructions below:
-
-- **./src/main/resources/pingcentral-210-220/config-h2-mysql.json**  // moving data from H2 to MySQL
-- **./src/main/resources/pingcentral-210-220/config-h2-postgresql.json**  // moving data from H2 to PostgreSQL
-- **./src/main/resources/pingcentral-210-220/config-mysql-postgresql.json**  // moving data from MySQL to PostgreSQL
-- **./src/main/resources/pingcentral-210-220/config-postgresql-mysql.json**  // moving data from PostgreSQL to MySQL
-
-By doing so those are included in the tool and can be accessed more easily later. If you prefer, do not update any of those files (except for the H2 ones that need an absolute path to its database files) and use the test databases that come with this repository.
-
-Even if you do not update them now, you can refer to them later. However, in that case also update the value for *change_log_file* to an absolute path.
 
 ### Creating a configuration
 
@@ -73,11 +57,11 @@ To create a configuration it is important to understand all details about it. He
 | $.source_database.username                               | username                                                | X        | -       | The username to connect to the database                                                                                                                                                                                                                                                                |
 | $.source_database.password                               | password                                                | X        | -       | The password to connect to the database                                                                                                                                                                                                                                                                |
 | $.target_databases.n....                                 | database configuration                                  | X        | -       | Same as for the source database. Even though it is an array, currently exactly one is supported (and required)                                                                                                                                                                                         |
-| .n.translate_**to**_postgres_large_clob_object           | postgres largeObject handling for text based data types | X        | -       | A list of tables and their columns for cases where the tool has to handle the PostgreSQL feature of large objects. This is useful (and required for PingCentral) when moving data **to** and **from** PostgreSQL                                                                                       |
+| .n.translate_**to**_postgres_large_clob_object           | postgres largeObject handling for text based data types | X        | -       | A list of tables and their columns for cases where the tool has to handle the PostgreSQL feature of large objects. This is useful when moving data **to** and **from** PostgreSQL                                                                                       |
 | .translate_to_postgres_large_clob_object.n.table         | table name                                              | X        | -       | The name of the table that contains columns that needs to be handled                                                                                                                                                                                                                                   |
 | .translate_to_postgres_large_clob_object.n.columns       | list of columns                                         | X/-      | -       | A list of columns that need to be handled. Optional but required if **translate_all=false** (see below) and invalid with **translate_all=true**                                                                                                                                                        |
 | .translate_to_postgres_large_clob_object.n.translate_all | true/false                                              | X/-      | false   | If set to true all columns of type **clob** are handled. Optional but required if no columns were listed above (at his time the flag is supported but has no effect)                                                                                                                                   |
-| .n.translate_**from**_postgres_large_clob_object         | postgres largeObject handling for text based data types | X        | -       | A list of tables and their columns for cases where the tool has to handle the PostgreSQL feature of large objects. This is useful (and required for PingCentral) when moving data **from** PostgreSQL. The content has the same structure as for translate_**to**_postgres_large_clob_object           |
+| .n.translate_**from**_postgres_large_clob_object         | postgres largeObject handling for text based data types | X        | -       | A list of tables and their columns for cases where the tool has to handle the PostgreSQL feature of large objects. This is useful when moving data **from** PostgreSQL. The content has the same structure as for translate_**to**_postgres_large_clob_object           |
 
 **Notes:**
 
@@ -117,105 +101,29 @@ Logging outputs include any errors that were found.
 
 **Tip:** Always run the *validate-* steps before transferring data.
 
-## Procedure for moving data for PingCentral (as an example)
-
-Before we get to a test setup it is important to understand how the overall process for moving data looks like. Here are the steps:
-
-- Launch PingCentral against H2, MySQL or PostgreSQL (source database)
-- Configure PingCentral with templates, applications, connections, certs, users, whatever is needed
-- Stop PingCentral
-- Configure PingCentral to connect to the target database
-- Move **{PINGCENTRAL_HOME}/conf/pingcentral.jwk** to a temporary location but **DO NOT** delete the file
-- Launch PingCentral against the target database, wait for the terminal to display **PingCentral running...**
-  - This step is required as PingCentral generates the database schema
-- Stop PingCentral
-  - PingCentral has generated a new **{PINGCENTRAL_HOME}/conf/pingcentral.jwk** which can be deleted as this is not required
-- Run **dbmerger**, it will copy all data from MySQL to PostgreSQL
-- Copy the original file **pingcentral.jwk** back to **{PINGCENTRAL_HOME}/conf/pingcentral.jwk**
-- Launch PingCentral against the target database
-- Verify that all configurations are available
-
-```
-IMPORTANT: NEVER EVER DELETE THE ORIGINAL FILE {PINGCENTRAL_HOME}/conf/pingcentral.jwk AS PINGCENTRAL BECOMES UNUSABLE!
-```
-
 ## Using a test setup to move data from MySQL to PostgreSQL
 
 To get a feeling for this tool it can be used with databases that run in docker. It requires the following:
 
-- PingFederate, including a valid license
-- PingCentral, including a valid license
 - Docker
 
 This repository contains a docker-compose file that launches a MySQL and a PostgreSQL database:
 
-- **./src/test/docker-compose.yml**
+- **./src/test/docker-compose.yml**  // review the file
 
 Follow these instructions:
 
 - update **/etc/hosts**: `sudo vi /etc/hosts`, add `{your-current-ip-address} dbmerger.mysql.local dbmerger.postgres.local`
-- create multiple configurations for PingCentral:
-  - copy **{PINGCENTRAL_HOME}/conf/application.properties** to **{PINGCENTRAL_HOME}/conf/application-original.properties** 
-  - copy **{PINGCENTRAL_HOME}/conf/application.properties** to **{PINGCENTRAL_HOME}/conf/application-mysql.properties** 
-  - copy **{PINGCENTRAL_HOME}/conf/application.properties** to **{PINGCENTRAL_HOME}/conf/application-postgres.properties**
-
-Update **{PINGCENTRAL_HOME}/conf/application-mysql.properties** to include these properties:
-```properties
-spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
-spring.datasource.url=jdbc:mariadb://dbmerger.mysql.local:3306/dbmerger?createDatabaseIfNotExist=true&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useJvmCharsetConverters=true
-spring.datasource.username=root
-spring.datasource.password=password
-```
-
-Update **{PINGCENTRAL_HOME}/conf/application-postgres.properties** to include these properties:
-```properties
-spring.datasource.driver-class-name=org.postgresql.Driver
-spring.datasource.url=jdbc:postgresql://dbmerger.postgres.local:5432/postgres?createDatabaseIfNotExist=false&useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useJvmCharsetConverters=true
-spring.datasource.username=postgres
-spring.datasource.password=password
-```
-
-If PingCentral is connecting to a PingFederate instance that uses a self-signed SSL cert set these properties in both properties files (only for development purposes):
-
-```properties
-server.ssl.trust-any=true
-server.ssl.https.verify-hostname=false
-```
-
-Time to try a full flow:
-
-1. Setup PingCentral against the source database
 - open a terminal, cd into **./src/test/database**, run `docker compose up`  // the databases use volumes so that any configuration is available after a restart
-- open a terminal, cd into **{PINGCENTRAL_HOME}/conf**, rename **application-mysql.properties** to **application.properties**
-- launch PingCentral: `{PINGCENTRAL_HOME}/bin/run.sh`
-- open a browser at **https://localhost:9022**, login using **Administrator/ 2Federate**, import the license, set a new password, apply any configurations
+- run your existing liquibase managed database scripts to create a database schema in one or both test databases
+- run dbmerger to copy data from your original database into one of these test databases
 
-2. Stop PingCentral and configure the target database connection
-- stop PingCentral
-- move **{PINGCENTRAL_HOME}/conf/pingcentral.jwk** to a temporary location
-- rename **application.properties** back to **application-mysql.properties** and rename **application-postgres.properties** to **application.properties**
-
-3. Launch PingCentral against the target database
-- launch PingCentral, wait for **PingCentral running...**, stop PingCentral, delete the newly generated file **{PINGCENTRAL_HOME}/conf/pingcentral.jwk**
-
-4. Copy the data form source to target
-- run dbmerger: cd **./target**, `java -jar dbmerger-1.0.0.jar transfer-data "pingcentral-210-220/config-mysql-postgresql.json"`
-- move **pingcentral.jwk** from its temporary location back to **{PINGCENTRAL_HOME}/conf/pingcentral.jwk**
-
-5. Launch PingCentral against the target database
-- launch PingCentral, verify that all configurations are available
-
-If everything went well all configurations are available in PingCentral using the target database.
-
-## Using a production setup to move data from MySQL to PostgreSQL
-
-This works the same way as for the test setup. However, here are a few additional notes, tips and thoughts:
+## Tips and additional information
 
 - the source database is never modified by the tool
 - try moving data from a development or staging system into a test database (for example, the ones of this repository work well for that) to get a sense for this tool
-- as mentioned earlier, do **NOT** delete the original **{PINGCENTRAL_HOME}/conf/pingcentral.jwk** file. Any configuration in PingCentral would become unavailable and cannot be recovered
 - always transfer data into an empty target database. Otherwise, unwanted conflicts could arise. This is the reason why **dbmerger** deletes data of a target database by default
-- when running **dbmerger** with *compare_data=true* many differences will be found if PostgreSQL is involved. This is due to the fact that PostgreSQL stores some large character objects in a referenced, internal large object storage location. The comparison feature will find that MySQL has *real data* whereas PostgreSQL has an **identifier** instead for the same row/ column. Those should be considered as 'expected difference'
+- when running **dbmerger** with *compare_data=true* many differences may be found if PostgreSQL is involved. This is due to the fact that PostgreSQL stores some large character objects in a referenced, internal large object storage location. The comparison feature will find that MySQL has *real data* whereas PostgreSQL has an **identifier** instead for the same row/ column. Those should be considered as 'expected differences'
 
 ## Database commands
 
@@ -237,9 +145,12 @@ Although anyone reading these instructions may be an expert with MySQL or Postgr
 
 ## Links
 
-- Download PingCentral: [https://www.pingidentity.com/en/resources/downloads/pingcentral.html](https://www.pingidentity.com/en/resources/downloads/pingcentral.html)
-- Download PingFederate: [https://www.pingidentity.com/en/resources/downloads/pingfederate.html](https://www.pingidentity.com/en/resources/downloads/pingfederate.html)
-- Get an easy to configure setup with PingFederate, PingAM and PingDirectory: [https://github.com/pingidentity/webinar-pingfed-pingam](https://github.com/pingidentity/webinar-pingfed-pingam)
+- PingIdentity: [https://pingidentity.com](https://pingidentity.com)
+- PingIdentity in GitHub: [https://github.com/pingidentity](https://github.com/pingidentity)
+
+# PingCentral
+
+If you are a PingCentral customer checkout the branch **feature/pingcentral** which contains prepared and ready to use configurations.
 
 # License
 

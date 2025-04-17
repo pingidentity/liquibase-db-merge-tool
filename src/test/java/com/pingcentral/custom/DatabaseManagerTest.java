@@ -14,13 +14,7 @@ import static org.junit.Assert.*;
 
 public class DatabaseManagerTest {
 
-    private static ObjectMapper MAPPER;
     private DatabaseManager dm;
-
-    @BeforeClass
-    public static void setUp() {
-        MAPPER = new ObjectMapper();
-    }
 
     @Test
     public void testConfigCorrect01() {
@@ -69,6 +63,25 @@ public class DatabaseManagerTest {
         try {
             dm = new DatabaseManager("src/test/resources/config-correct-03.json");
             Config config = dm.getConfig();
+            ConfigDatabase targetDb = config.getTargetDatabases().get(0);
+            assertEquals(2, targetDb.getTranslateToPostgresClobObjects().size());
+            assertEquals(2, targetDb.getTranslateToPostgresClobObjects().get(0).getColumns().size());
+            assertEquals("table_01", targetDb.getTranslateToPostgresClobObjects().get(0).getTable());
+            assertFalse(targetDb.getTranslateToPostgresClobObjects().get(0).isTranslateAll());
+            assertEquals("table_02", targetDb.getTranslateToPostgresClobObjects().get(1).getTable());
+            assertTrue(targetDb.getTranslateToPostgresClobObjects().get(1).isTranslateAll());
+        } catch (Exception e) {
+            fail(e.getMessage());
+        }
+    }
+
+    @Test
+    public void testConfigCorrect04() {
+        try {
+            dm = new DatabaseManager("src/test/resources/config-correct-04.json");
+            Config config = dm.getConfig();
+            ConfigDatabase sourceDb = config.getSourceDatabase();
+            assertTrue(sourceDb.isPostgresType());
             ConfigDatabase targetDb = config.getTargetDatabases().get(0);
             assertEquals(2, targetDb.getTranslateFromPostgresClobObjects().size());
             assertEquals(2, targetDb.getTranslateFromPostgresClobObjects().get(0).getColumns().size());

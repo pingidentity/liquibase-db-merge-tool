@@ -15,7 +15,7 @@
       "jdbc_url": "jdbc:postgresql://dbmerger.postgres.local:5432/postgres",
       "username": "postgres",
       "password": "password",
-      "translate_from_postgres_large_clob_object": [
+      "translate_to_postgres_large_clob_object": [
         {
           "table": "table_01",
           "translate_all": false,
