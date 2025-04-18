@@ -1,23 +1,24 @@
 {
-  "description": "Configured to copy database data from MySQL to PostgreSQL for PingCentral version 2.1.0 - 2.2.0",
-  "change_log_file": "changelog.json",
+  "description": "Configured to copy database data from PostgreSQL to MySQL for PingCentral version 2.1.0 - 2.2.0",
+  "change_log_file": "/abolute/path/to/changelog.json",
   "delete_target_data": true,
   "compare_data": false,
   "source_database": {
-    "name": "mysql",
-    "dbms_type": "mysql",
-    "jdbc_url": "jdbc:mariadb://dbmerger.mysql.local:3306/dbmerger?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useJvmCharsetConverters=true",
-    "username": "root",
+    "postgres_type": true,
+    "name": "postgresql",
+    "dbms_type": "postgresql",
+    "jdbc_url": "jdbc:postgresql://dbmerger.postgres.local:5432/postgres?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useJvmCharsetConverters=true",
+    "username": "postgres",
     "password": "password"
   },
   "target_databases": [
     {
-      "name": "postgresql",
-      "dbms_type": "postgresql",
-      "jdbc_url": "jdbc:postgresql://dbmerger.postgres.local:5432/postgres?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useJvmCharsetConverters=true",
-      "username": "postgres",
+      "name": "mysql",
+      "dbms_type": "mysql",
+      "jdbc_url": "jdbc:mariadb://dbmerger.mysql.local:3306/dbmerger?useUnicode=true&useJDBCCompliantTimezoneShift=true&useLegacyDatetimeCode=false&serverTimezone=UTC&useJvmCharsetConverters=true",
+      "username": "root",
       "password": "password",
-      "translate_to_postgres_large_clob_object": [
+      "translate_from_postgres_large_clob_object": [
         {
           "table": "client_template",
           "columns": ["client", "oidc_policy", "atm"]

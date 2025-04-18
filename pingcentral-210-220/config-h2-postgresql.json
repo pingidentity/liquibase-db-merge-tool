@@ -1,6 +1,6 @@
 {
   "description": "Configured to copy database from H2 to PostgreSQL for PingCentral version 2.1.0 - 2.2.0",
-  "change_log_file": "changelog.json",
+  "change_log_file": "/abolute/path/to/changelog.json",
   "delete_target_data": true,
   "compare_data": false,
   "source_database": {
